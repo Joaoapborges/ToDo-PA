@@ -1,17 +1,88 @@
-/* Variáveis CSS (Preparação para o Modo Escuro no Pós-MVP) */
+/* --- VARIÁVEIS DE COR (Light Mode - Padrão) --- */
 :root {
-    --bg-color: #f4f7f6;
-    --surface-color: #ffffff;
-    --text-primary: #333333;
-    --text-secondary: #666666;
-    --border-color: #e0e0e0;
-    --primary-color: #0078d7;
-    --primary-hover: #005a9e;
-    --danger-color: #d13438;
-    --danger-hover: #a80000;
+    /* Fundos Globais */
+    --bg-color: #F9F9FF; /* Superfície */
+    --surface-color: #FFFFFF; /* Container */
+    
+    /* Textos */
+    --text-primary: #1A1C1E; /* Texto Principal */
+    --text-secondary: #44474E; /* Texto Secundário */
+    --text-on-primary: #FFFFFF; /* Texto em cima de botões primários */
+    
+    /* Bordas e Sombras */
+    --border-color: #D3DAEA; /* Bordas/Linhas */
+    --shadow-light: rgba(0, 0, 0, 0.03);
+    --shadow-medium: rgba(0, 0, 0, 0.1);
+    --modal-overlay: rgba(26, 28, 30, 0.4);
+    
+    /* Cores de Destaque (Primary) */
+    --primary-color: #3B82F6; /* Primária */
+    --primary-hover: #2563eb;
+    --primary-shadow: rgba(59, 130, 246, 0.25);
+    
+    /* Cores de Perigo/Destrutivas */
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+
+    /* Cores da Sidebar Lateral (Adaptadas ao Light Mode) */
+    --sidebar-bg: #FFFFFF;
+    --sidebar-border: #D3DAEA;
+    --sidebar-text: #44474E;
+    --sidebar-hover-bg: #F9F9FF;
+    --sidebar-active-bg: rgba(59, 130, 246, 0.08); /* Fundo azul muito suave */
+    --sidebar-active-border: #3B82F6;
+    --sidebar-active-text: #3B82F6;
+
+    /* Botões Secundários e Ações */
+    --btn-secondary-bg: #F9F9FF;
+    --btn-secondary-hover: #D3DAEA;
+    --btn-edit-bg: #F9F9FF;
+    --btn-edit-hover: #D3DAEA;
 }
 
-/* Reset básico */
+/* --- VARIÁVEIS DE COR (Dark Mode) --- */
+[data-theme="dark"] {
+    /* Fundos Globais */
+    --bg-color: #111318; /* Superfície */
+    --surface-color: #1A1C1E; /* Container */
+    
+    /* Textos */
+    --text-primary: #E2E2E6; /* Texto Principal */
+    --text-secondary: #C4C6D0; /* Texto Secundário */
+    --text-on-primary: #111318; /* Texto escuro para contrastar no botão azul claro */
+    
+    /* Bordas e Sombras */
+    --border-color: #44474E; /* Bordas/Linhas */
+    --shadow-light: rgba(0, 0, 0, 0.3);
+    --shadow-medium: rgba(0, 0, 0, 0.5);
+    --modal-overlay: rgba(0, 0, 0, 0.7);
+    
+    /* Cores de Destaque (Primary) */
+    --primary-color: #60A5FA; /* Primária */
+    --primary-hover: #93C5FD;
+    --primary-shadow: rgba(96, 165, 250, 0.15);
+    
+    /* Cores de Perigo/Destrutivas (Suavizadas para ecrãs escuros) */
+    --danger-color: #F87171;
+    --danger-hover: #FCA5A5;
+
+    /* Cores da Sidebar Lateral (Adaptadas ao Dark Mode) */
+    --sidebar-bg: #1A1C1E; /* Igual ao Container */
+    --sidebar-border: #44474E;
+    --sidebar-text: #C4C6D0;
+    --sidebar-hover-bg: #2A2D35;
+    --sidebar-active-bg: rgba(96, 165, 250, 0.1);
+    --sidebar-active-border: #60A5FA;
+    --sidebar-active-text: #60A5FA;
+
+    /* Botões Secundários e Ações */
+    --btn-secondary-bg: #2A2D35;
+    --btn-secondary-hover: #44474E;
+    --btn-edit-bg: #2A2D35;
+    --btn-edit-hover: #44474E;
+}
+
+/* --- RESET E LAYOUT --- */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -23,47 +94,208 @@ body {
     background-color: var(--bg-color);
     color: var(--text-primary);
     height: 100vh;
-    overflow: hidden; /* O scroll será tratado nas secções */
+    overflow: hidden;
 }
 
-/* Layout Principal em Grelha */
 .app-container {
-    display: grid;
-    height: 100vh;
+    display: flex; /* Estava grid, mas na sidebar flex é mais fácil */
+    height: 100%;
 }
 
-/* --- LADO ESQUERDO: LISTA --- */
-.task-list-section {
-    padding: 20px;
+/* --- BARRA LATERAL --- */
+.sidebar {
+    width: 250px;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
     display: flex;
     flex-direction: column;
-    overflow-y: auto; /* Permite scroll apenas na lista */
 }
 
+.sidebar-header {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--sidebar-border);
+    margin-bottom: 10px;
+}
+
+.nav-btn {
+    background: none;
+    border: none;
+    color: var(--sidebar-text);
+    padding: 15px 20px;
+    text-align: left;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s, padding-left 0.2s;
+}
+
+.nav-btn:hover {
+    background-color: var(--sidebar-hover-bg);
+    padding-left: 25px;
+}
+
+.nav-btn.active {
+    background-color: var(--sidebar-active-bg);
+    border-left: 4px solid var(--sidebar-active-border);
+    font-weight: bold;
+    color: var(--sidebar-active-text);
+}
+
+.content {
+    flex-grow: 1;
+    padding: 40px; /* Mais espaço geral como na imagem */
+    background-color: var(--bg-color);
+    overflow-y: auto;
+}
+
+.page { display: none; }
+.page.active { 
+    display: block; 
+    animation: fadeIn 0.3s ease-in-out; 
+}
+
+/* --- ÁREA PRINCIPAL E TAREFAS --- */
+.task-list-section {
+    display: flex;
+    flex-direction: column;
+    max-width: 900px; /* Ajuda a não esticar demasiado em monitores grandes */
+    margin: 0 auto;
+}
+
+/* Maior espaçamento abaixo do header principal */
 .list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px; 
+}
+
+.header-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Espaço entre o H1 e o subtítulo */
+}
+
+.header-titles h1 {
+    font-size: 1.8rem;
+}
+
+.header-titles h4 {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* --- CALENDÁRIO --- */
+.calendar-container {
+    margin-bottom: 40px; /* Espaço generoso até à lista de tarefas */
+}
+
+.calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
 }
 
+.calendar-header h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.btn-icon {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--text-primary);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon:hover {
+    background: var(--btn-secondary-bg);
+}
+
+.week-slider {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px; /* Dias mais espaçados */
+}
+
+.day-card {
+    flex: 1;
+    background-color: var(--surface-color);
+    border: 1px solid transparent; /* Removemos a borda padrão para ficar mais limpo como na imagem */
+    border-radius: 12px;
+    padding: 20px 10px; /* Mais alto */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px var(--shadow-light); /* Sombra suave igual à imagem */
+}
+
+.day-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px var(--shadow-medium);
+}
+
+.day-card .day-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.day-card .day-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.day-card.active {
+    background-color: var(--primary-color);
+    box-shadow: 0 8px 16px var(--primary-shadow);
+}
+
+.day-card.active .day-name,
+.day-card.active .day-number {
+    color: var(--text-on-primary);
+}
+
+/* --- LISTA DE TAREFAS --- */
+.tasks-subheader {
+    margin-bottom: 20px;
+}
+
+.tasks-subheader h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
 .task-list {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
-/* Estilo de cada Tarefa */
 .task-item {
     background-color: var(--surface-color);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 15px;
+    border: none; /* Mais limpo, sem bordas, apenas sombra */
+    border-radius: 12px;
+    padding: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px var(--shadow-light);
 }
 
 .task-info {
@@ -72,39 +304,123 @@ body {
     gap: 15px;
 }
 
-.task-checkbox {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-}
-
 .task-name {
     font-weight: 500;
     font-size: 16px;
 }
 
-/* Classe dinâmica para quando a tarefa estiver concluída */
 .task-item.completed .task-name {
     color: var(--text-secondary);
+    text-decoration: line-through; /* Típico de tarefas concluídas */
 }
 
-.task-actions {
-    display: flex;
-    gap: 10px;
+/* --- BOTÕES E FORMS --- */
+.btn {
+    padding: 10px 20px; /* Um pouco mais altos e largos */
+    border: none;
+    border-radius: 8px; /* Cantos um pouco mais redondos */
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background-color 0.2s;
 }
 
-/* --- LADO DIREITO: FORMULÁRIO --- */
-.task-form-section {
+.btn.primary {
+    background-color: var(--primary-color);
+    color: var(--text-on-primary);
+}
+
+.btn.primary:hover { background-color: var(--primary-hover); }
+
+.btn.secondary {
+    background-color: var(--btn-secondary-bg);
+    color: var(--text-primary);
+}
+
+.btn.secondary:hover { background-color: var(--btn-secondary-hover); }
+
+.btn-edit, .btn-delete {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.btn-edit { background-color: var(--btn-edit-bg); color: var(--text-primary); }
+.btn-edit:hover { background-color: var(--btn-edit-hover); }
+
+.btn-delete {
+    background-color: transparent;
+    color: var(--danger-color);
+    border: 1px solid var(--danger-color);
+}
+.btn-delete:hover {
+    background-color: var(--danger-color);
+    color: var(--text-on-primary);
+}
+
+/* --- MODAIS --- */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--modal-overlay);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show { display: flex; }
+
+.modal-content {
     background-color: var(--surface-color);
-    padding: 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    box-shadow: 0 10px 25px var(--shadow-medium);
+    animation: modalFadeIn 0.3s ease;
+    padding: 30px 25px 25px;
+}
+
+.close-button {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: var(--text-secondary);
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-button:hover { color: var(--danger-color); }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- FORMULÁRIOS (Inputs e Modais) --- */
+.task-form-section {
     display: flex;
     flex-direction: column;
-    box-shadow: -2px 0 5px rgba(0,0,0,0.02);
 }
 
 .task-form-section h2 {
     margin-bottom: 20px;
     font-size: 1.5rem;
+    color: var(--text-primary);
 }
 
 .form-group {
@@ -123,16 +439,30 @@ body {
 .form-group input[type="text"],
 .form-group input[type="datetime-local"],
 .form-group textarea {
-    padding: 10px;
+    padding: 10px 12px;
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 1rem;
+    background-color: var(--bg-color); /* Fundo subtil para destacar do modal branco */
+    color: var(--text-primary);
+    width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Efeito ao clicar no input (Focus) */
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-shadow);
 }
 
 .form-group textarea {
     resize: vertical;
+    min-height: 80px;
 }
 
+/* Alinhamento da checkbox */
 .checkbox-group {
     flex-direction: row;
     align-items: center;
@@ -141,200 +471,23 @@ body {
 
 .checkbox-group label {
     margin-bottom: 0;
+    cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary-color); /* Muda a cor da checkbox para o azul */
 }
 
 .form-actions {
-    margin-top: 20px;
+    margin-top: 25px;
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-/* --- BOTÕES --- */
-.btn {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: background-color 0.2s;
-}
-
-.btn.primary {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.btn.primary:hover {
-    background-color: var(--primary-hover);
-}
-
-.btn.secondary {
-    background-color: #e0e0e0;
-    color: var(--text-primary);
-}
-
-.btn.secondary:hover {
-    background-color: #cccccc;
-}
-
-.btn-edit, .btn-delete {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.85rem;
-}
-
-.btn-edit {
-    background-color: #f0f0f0;
-}
-
-.btn-edit:hover {
-    background-color: #e0e0e0;
-}
-
-.btn-delete {
-    background-color: transparent;
-    color: var(--danger-color);
-    border: 1px solid var(--danger-color);
-}
-
-.btn-delete:hover {
-    background-color: var(--danger-color);
-    color: white;
-}
-
 .full-width {
     width: 100%;
-}
-
-/* --- ESTILOS DO MODAL / POP-UP --- */
-.modal {
-    display: none; /* Escondido por defeito */
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Fundo escuro semi-transparente */
-    align-items: center; /* Centra verticalmente */
-    justify-content: center; /* Centra horizontalmente */
-}
-
-/* Classe dinâmica para mostrar o modal via JS */
-.modal.show {
-    display: flex; 
-}
-
-.modal-content {
-    background-color: var(--surface-color);
-    border-radius: 8px;
-    width: 90%;
-    max-width: 450px; /* Largura máxima do pop-up */
-    position: relative;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    animation: modalFadeIn 0.3s ease; /* Efeito suave de entrada */
-    padding: 30px 25px 25px;
-}
-
-.close-button {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    color: var(--text-secondary);
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: color 0.2s;
-}
-
-.close-button:hover {
-    color: var(--danger-color);
-}
-
-@keyframes modalFadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/*Side bar*/
-/* Limpar margens padrão */
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100vh; /* Ocupar 100% da altura da janela */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    overflow: hidden; /* Evitar scroll na página inteira, o scroll fica no main */
-}
-
-/* Layout Principal */
-.app-container {
-    display: flex;
-    height: 100%;
-}
-
-/* Barra Lateral */
-.sidebar {
-    width: 250px;
-    background-color: #2c3e50; /* Cor escura, podes ajustar */
-    color: white;
-    display: flex;
-    flex-direction: column;
-}
-
-.sidebar-header {
-    padding: 20px;
-    text-align: center;
-    border-bottom: 1px solid #1a252f;
-    margin-bottom: 10px;
-}
-
-/* Botões de Navegação */
-.nav-btn {
-    background: none;
-    border: none;
-    color: #ecf0f1;
-    padding: 15px 20px;
-    text-align: left;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.2s, padding-left 0.2s;
-}
-
-.nav-btn:hover {
-    background-color: #34495e;
-    padding-left: 25px; /* Pequeno efeito visual ao passar o rato */
-}
-
-.nav-btn.active {
-    background-color: #2980b9;
-    border-left: 4px solid #3498db;
-    font-weight: bold;
-}
-
-/* Área de Conteúdo */
-.content {
-    flex-grow: 1;
-    padding: 30px;
-    background-color: #f5f6fa;
-    overflow-y: auto; /* Adiciona scroll apenas na área de conteúdo se necessário */
-}
-
-/* Sistema de Páginas (Ocultar/Mostrar) */
-.page {
-    display: none;
-}
-
-.page.active {
-    display: block;
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-/* Pequena animação suave ao trocar de aba */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
 }

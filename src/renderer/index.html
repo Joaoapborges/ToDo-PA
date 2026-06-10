@@ -23,13 +23,31 @@
             
             <section id="tarefas-page" class="page active">
                 <div class="task-list-section">
+                    
                     <header class="list-header">
-                        <h1>As Minhas Tarefas</h1>
-                        <button id="btn-new-task" class="btn primary">Nova Tarefa</button>
+                        <div class="header-titles">
+                            <h1 id="user-greeting">Good Morning, Alex</h1>
+                            <h4 id="day-greeting">Here's your schedule for today.</h4>
+                        </div>
+                        <button id="btn-new-task" class="btn primary">+ New Task</button>
                     </header>
+
+                    <div class="calendar-container">
+                        <header class="calendar-header">
+                            <button id="btn-prev-week" class="btn-icon">&lt;</button>
+                            <h2 id="calendar-month-year">Junho 2026</h2>
+                            <button id="btn-next-week" class="btn-icon">&gt;</button>
+                        </header>
+                        <div id="week-slider" class="week-slider"></div>
+                    </div>
+                    
+                    <div class="tasks-subheader">
+                        <h2>Today's Focus</h2>
+                    </div>
                     
                     <ul id="task-list" class="task-list">
                         </ul>
+
                 </div>
             </section>
 
