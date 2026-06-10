@@ -7,32 +7,48 @@
     <title>To Do List App</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<div id="confirm-modal" class="modal">
-    <div class="modal-content" style="max-width: 320px; text-align: center;">
-        <p style="margin-bottom: 20px; font-size: 1rem;">Tens a certeza que queres apagar esta tarefa?</p>
-        <div style="display: flex; gap: 10px; justify-content: center;">
-            <button id="btn-confirm-delete" class="btn primary">Apagar</button>
-            <button id="btn-cancel-delete" class="btn secondary">Cancelar</button>
-        </div>
-    </div>
-</div>
 <body>
     <div class="app-container">
-        <main class="task-list-section">
-            <header class="list-header">
-                <h1>As Minhas Tarefas</h1>
-                <button id="btn-new-task" class="btn primary">Nova Tarefa</button>
-            </header>
+        
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>To Do</h2>
+            </div>
+            <button class="nav-btn active" data-target="tarefas-page">Tarefas</button>
+            <button class="nav-btn" data-target="calendario-page">Calendário</button>
+            <button class="nav-btn" data-target="settings-page">Settings</button>
+        </nav>
+
+        <main class="content">
             
-            <ul id="task-list" class="task-list">
-                </ul>
+            <section id="tarefas-page" class="page active">
+                <div class="task-list-section">
+                    <header class="list-header">
+                        <h1>As Minhas Tarefas</h1>
+                        <button id="btn-new-task" class="btn primary">Nova Tarefa</button>
+                    </header>
+                    
+                    <ul id="task-list" class="task-list">
+                        </ul>
+                </div>
+            </section>
+
+            <section id="calendario-page" class="page">
+                <h1>Calendário</h1>
+                <p>A carregar interface do calendário...</p>
+            </section>
+
+            <section id="settings-page" class="page">
+                <h1>Settings</h1>
+                <p>Configurações da aplicação...</p>
+            </section>
+
         </main>
     </div>
 
     <div id="task-modal" class="modal">
         <div class="modal-content">
             <span class="close-button" id="btn-close-modal">&times;</span>
-            
             <aside class="task-form-section">
                 <h2 id="form-title">Adicionar Tarefa</h2>
                 <form id="task-form">
@@ -64,6 +80,16 @@
                     </div>
                 </form>
             </aside>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content" style="max-width: 320px; text-align: center;">
+            <p style="margin-bottom: 20px; font-size: 1rem;">Tens a certeza que queres apagar esta tarefa?</p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button id="btn-confirm-delete" class="btn primary">Apagar</button>
+                <button id="btn-cancel-delete" class="btn secondary">Cancelar</button>
+            </div>
         </div>
     </div>
 

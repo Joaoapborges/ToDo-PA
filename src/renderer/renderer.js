@@ -1,5 +1,4 @@
-
-// CAPTURAR OS ELEMENTOS DO DOM
+// --- CAPTURAR OS ELEMENTOS DO DOM (CRUD) ---
 const taskForm = document.getElementById('task-form');
 const taskList = document.getElementById('task-list');
 const itemIdInput = document.getElementById('item-id');
@@ -16,6 +15,28 @@ const confirmModal = document.getElementById('confirm-modal');
 const btnConfirmDelete = document.getElementById('btn-confirm-delete');
 const btnCancelDelete = document.getElementById('btn-cancel-delete');
 
+//  CAPTURAR OS ELEMENTOS DO DOM (NAVEGAÇÃO) 
+const navButtons = document.querySelectorAll('.nav-btn');
+const pages = document.querySelectorAll('.page');
+
+//  LÓGICA DE NAVEGAÇÃO LATERAL
+navButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        // Remover a classe 'active' de todos os botões e páginas
+        navButtons.forEach(btn => btn.classList.remove('active'));
+        pages.forEach(page => page.classList.remove('active'));
+
+        // Adicionar a classe 'active' ao botão clicado
+        button.classList.add('active');
+
+        // Encontrar e mostrar a página correspondente
+        const targetPageId = button.getAttribute('data-target');
+        document.getElementById(targetPageId).classList.add('active');
+    });
+});
+
+// LÓGICA DE CRUD E ESTADO
+
 // Variável para guardar o estado das tarefas na memória
 let currentTasks = [];
 
@@ -29,10 +50,7 @@ function closeModal() {
     resetForm();
 }
 
-// LÓGICA DE CARREGAMENTO E RENDERIZAÇÃO
-
 // Buscar as tarefas ao backend (através do preload)
-// assincrona para esperar pela resposta 
 async function loadTasks() {
     try {
         currentTasks = await window.todoAPI.getItems();
@@ -86,13 +104,10 @@ function renderTasks(tasks) {
     });
 }
 
-// LÓGICA DE CRUD (CRIAR, ATUALIZAR, APAGAR)
-
 // Submissão do Formulário (Gravar/Atualizar)
 taskForm.addEventListener('submit', async (e) => {
-    e.preventDefault(); // Evitar o refresh da página
+    e.preventDefault();
 
-    // Construir o objeto a ser enviado para o todoAPI
     const taskItem = {
         ID: itemIdInput.value ? parseInt(itemIdInput.value) : null,
         Name: itemNameInput.value,
@@ -104,14 +119,13 @@ taskForm.addEventListener('submit', async (e) => {
     try {
         await window.todoAPI.saveItem(taskItem);
         closeModal();
-        loadTasks(); // Recarregar a lista para refletir as alterações
+        loadTasks(); // Recarregar a lista
     } catch (error) {
         console.error('Erro ao guardar tarefa:', error);
     }
 });
 
-// Delegação de Eventos (Event Delegation) na Lista
-// É mais eficiente adicionar 1 listener na <ul> do que 1 listener por cada botão
+// Delegação de Eventos na Lista
 taskList.addEventListener('click', async (e) => {
     const target = e.target;
     const id = target.getAttribute('data-id');
@@ -119,21 +133,6 @@ taskList.addEventListener('click', async (e) => {
     if (!id) return;
 
     // Ação: APAGAR
-    /* // erro por causa do confirm
-   if (target.classList.contains('btn-delete')) {
-        if (confirm('Tens a certeza que queres apagar esta tarefa?')) {
-            try {
-                await window.todoAPI.deleteItem(parseInt(id));
-                resetForm();
-                loadTasks();
-            }catch (error) {
-                console.error('Erro ao apagar tarefa:', error);
-            }
-        }
-        
-        return;
-    }
-*/
     if (target.classList.contains('btn-delete')) {
         const idToDelete = parseInt(id);
         confirmModal.classList.add('show');
@@ -158,7 +157,6 @@ taskList.addEventListener('click', async (e) => {
 
     // Ação: EDITAR
     if (target.classList.contains('btn-edit')) {
-        // Procurar no array carregado a tarefa correspondente
         const taskToEdit = currentTasks.find(t => t.ID === parseInt(id));
         if (taskToEdit) {
             populateForm(taskToEdit);
@@ -166,7 +164,7 @@ taskList.addEventListener('click', async (e) => {
         }
     }
 
-    // Ação: MARCAR/DESMARCAR CONCLUÍDA DIRETO NA LISTA
+    // Ação: MARCAR/DESMARCAR CONCLUÍDA
     if (target.classList.contains('task-checkbox')) {
         const taskToToggle = currentTasks.find(t => t.ID === parseInt(id));
         if (taskToToggle) {
@@ -185,7 +183,7 @@ taskList.addEventListener('click', async (e) => {
 
 // FUNÇÕES UTILITÁRIAS DE INTERFACE
 
-// Preencher o formulário quando se clica em Editar
+// Preencher o formulário
 function populateForm(task) {
     formTitle.textContent = 'Editar Tarefa';
     itemIdInput.value = task.ID;
@@ -200,10 +198,10 @@ function populateForm(task) {
         itemDueDateInput.value = '';
     }
 
-    btnCancel.style.display = 'block'; // Mostrar botão de cancelar
+    btnCancel.style.display = 'block';
 }
 
-// Limpar o formulário para o estado padrão
+// Limpar o formulário
 function resetForm() {
     taskForm.reset();
     itemIdInput.value = '';
@@ -211,25 +209,21 @@ function resetForm() {
     btnCancel.style.display = 'none';
 }
 
-// Alterar o listener do botão Cancelar existente
 btnCancel.addEventListener('click', closeModal);
-
-// Fechar no "X"
 btnCloseModal.addEventListener('click', closeModal);
 
-// Ao clicar em Nova Tarefa, reseta o formulário e abre o modal
 btnNewTask.addEventListener('click', () => {
     resetForm();
     openModal();
     itemNameInput.focus();
 });
 
-// Fechar o modal se o utilizador clicar fora da caixa branca
+// Fechar modal clicando fora
 window.addEventListener('click', (e) => {
     if (e.target === taskModal) {
         closeModal();
     }
 });
 
-// Carregar tarefas logo após a abertura da aplicação
+// Inicialização: Carregar tarefas
 loadTasks();
