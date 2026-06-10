@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do List App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<div id="confirm-modal" class="modal">
+    <div class="modal-content" style="max-width: 320px; text-align: center;">
+        <p style="margin-bottom: 20px; font-size: 1rem;">Tens a certeza que queres apagar esta tarefa?</p>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button id="btn-confirm-delete" class="btn primary">Apagar</button>
+            <button id="btn-cancel-delete" class="btn secondary">Cancelar</button>
+        </div>
+    </div>
+</div>
+<body>
+    <div class="app-container">
+        <main class="task-list-section">
+            <header class="list-header">
+                <h1>As Minhas Tarefas</h1>
+                <button id="btn-new-task" class="btn primary">Nova Tarefa</button>
+            </header>
+            
+            <ul id="task-list" class="task-list">
+                </ul>
+        </main>
+    </div>
+
+    <div id="task-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="btn-close-modal">&times;</span>
+            
+            <aside class="task-form-section">
+                <h2 id="form-title">Adicionar Tarefa</h2>
+                <form id="task-form">
+                    <input type="hidden" id="item-id">
+
+                    <div class="form-group">
+                        <label for="item-name">Nome da Tarefa *</label>
+                        <input type="text" id="item-name" required placeholder="Ex: Pagar a luz">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="item-notes">Notas</label>
+                        <textarea id="item-notes" rows="4" placeholder="Detalhes adicionais..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="item-due-date">Data Limite (Opcional)</label>
+                        <input type="datetime-local" id="item-due-date">
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="item-done">
+                        <label for="item-done">Marcar como concluída</label>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn primary full-width">Gravar Tarefa</button>
+                        <button type="button" id="btn-cancel" class="btn secondary full-width" style="display: none;">Cancelar</button>
+                    </div>
+                </form>
+            </aside>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

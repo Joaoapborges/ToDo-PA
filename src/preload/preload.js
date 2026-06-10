@@ -1,0 +1,9 @@
+const { contextBridge, ipcRenderer } = require('electron');
+
+// Expomos um objeto chamado 'todoAPI' para a nossa janela (window.todoAPI)
+contextBridge.exposeInMainWorld('todoAPI', {
+    // Pedimos ao Processo Principal (main.js) para executar as ações
+    getItems: () => ipcRenderer.invoke('db:getItems'),
+    saveItem: (item) => ipcRenderer.invoke('db:saveItem', item),
+    deleteItem: (id) => ipcRenderer.invoke('db:deleteItem', id)
+});
