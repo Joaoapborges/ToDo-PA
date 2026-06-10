@@ -57,8 +57,36 @@
             </section>
 
             <section id="settings-page" class="page">
-                <h1>Settings</h1>
-                <p>Configurações da aplicação...</p>
+                <div class="settings-container">
+                    
+                    <header class="settings-header">
+                        <h2>Definições</h2>
+                    </header>
+
+                    <div class="settings-card">
+                        <div class="settings-info">
+                            <h3>Perfil do Utilizador</h3>
+                            <p>Atualiza a tua foto de perfil e o teu nome.</p>
+                        </div>
+                        
+                        <div class="settings-action profile-preview">
+                            <div class="profile-avatar">A</div>
+                            <span class="profile-name">Alex</span>
+                            <button class="btn secondary" disabled title="Estará disponível em breve">Editar Perfil</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="settings-info">
+                            <h3>Tema da Aplicação</h3>
+                            <p>Escolhe a tua preferência de visualização (Claro ou Escuro).</p>
+                        </div>
+                        <div class="settings-action">
+                            <button id="btn-theme-toggle" class="btn secondary">Mudar para Dark Mode</button>
+                        </div>
+                    </div>
+
+                </div>
             </section>
 
         </main>
