@@ -474,11 +474,11 @@ body {
     cursor: pointer;
 }
 
-.checkbox-group input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
+input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
     cursor: pointer;
-    accent-color: var(--primary-color); /* Muda a cor da checkbox para o azul */
+    accent-color: var(--primary-color);
 }
 
 .form-actions {
@@ -595,4 +595,99 @@ button:disabled {
     color: var(--text-secondary);
     font-size: 0.8em;
     margin-top: 4px;
+}
+
+/* --- Utilitários --- */
+.hidden {
+    display: none !important;
+}
+
+/* --- Modal de Confirmação --- */
+.confirm-modal-content {
+    max-width: 320px;
+    text-align: center;
+}
+
+.confirm-message {
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+
+.confirm-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+/* Atualização do task-item para usar coluna */
+.task-item {
+    background-color: var(--surface-color);
+    border: none;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; /* <-- A solução principal está aqui */
+    box-shadow: 0 2px 8px var(--shadow-light);
+    transition: box-shadow 0.2s;
+}
+
+.task-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap; /* Impede que a seta salte para a linha de cima */
+}
+
+/* Novo layout para o cabeçalho da tarefa */
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Estilos para o botão da seta */
+.btn-expand {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: transform 0.3s ease, color 0.2s, background-color 0.2s;
+}
+
+.btn-expand:hover {
+    color: var(--primary-color);
+    background-color: var(--sidebar-hover-bg);
+}
+
+/* Roda a seta 180 graus quando a descrição está aberta */
+.btn-expand.open {
+    transform: rotate(180deg);
+    color: var(--primary-color);
+}
+
+/* Estilos da caixa de descrição */
+.task-description {
+    display: none;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    padding-top: 15px;
+    margin-top: 15px;
+    border-top: 1px dashed var(--border-color);
+    margin-left: 34px; /* Compensa o espaço da checkbox */
+    text-align: left; /* Força o texto à esquerda */
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Classe ativada via JavaScript para mostrar a descrição */
+.task-description.expanded {
+    display: block;
 }

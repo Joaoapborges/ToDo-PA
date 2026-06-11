@@ -92,18 +92,47 @@ function renderTasks(tasks) {
             </small>`;
         }
 
+        // Descrição
+        let expandBtnHtml = '';
+        let descriptionHtml = '';
+
+        // Se existirem notas e não forem apenas espaços em branco
+        if (task.Notes && task.Notes.trim() !== '') {
+            // Cria o botão com o ícone SVG da seta
+            expandBtnHtml = `
+                <button class="btn-expand" aria-label="Expandir descrição">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+            `;
+            // div da descrição (usando replace para manter quebras de linha reais)
+            descriptionHtml = `
+                <div class="task-description">
+                    ${task.Notes.replace(/\n/g, '<br>')}
+                </div>
+            `;
+        }
+
+
+        // item 
+
         li.innerHTML = `
-            <div class="task-info">
-                <input type="checkbox" class="task-checkbox" data-id="${task.ID}" ${task.Done ? 'checked' : ''}>
-                <div>
-                    <span class="task-name">${task.Name}</span>
-                    ${dateHtml}
+            <div class="task-header">
+                <div class="task-info">
+                    <input type="checkbox" class="task-checkbox" data-id="${task.ID}" ${task.Done ? 'checked' : ''}>
+                    <div>
+                        <span class="task-name">${task.Name}</span>
+                        ${dateHtml}
+                    </div>
+                </div>
+                <div class="task-actions" style="display: flex; gap: 10px; align-items: center;">
+                    ${expandBtnHtml}
+                    <button class="btn-edit" data-id="${task.ID}">Editar</button>
+                    <button class="btn-delete" data-id="${task.ID}">Apagar</button>
                 </div>
             </div>
-            <div class="task-actions">
-                <button class="btn-edit" data-id="${task.ID}">Editar</button>
-                <button class="btn-delete" data-id="${task.ID}">Apagar</button>
-            </div>
+            ${descriptionHtml}
         `;
         taskList.appendChild(li);
     });
@@ -133,6 +162,24 @@ taskForm.addEventListener('submit', async (e) => {
 // Delegação de Eventos na Lista
 taskList.addEventListener('click', async (e) => {
     const target = e.target;
+
+    //EXPANDIR / COLAPSAR DESCRIÇÃO
+    //  closest() porque o utilizador pode clicar exatamente em cima da linha do SVG
+    const expandBtn = target.closest('.btn-expand');
+    if (expandBtn) {
+        const taskItem = expandBtn.closest('.task-item');
+        const description = taskItem.querySelector('.task-description');
+        
+        if (description) {
+            description.classList.toggle('expanded');
+            expandBtn.classList.toggle('open');
+        }
+        return; // Pára a execução aqui, pois não precisamos de verificar IDs para expandir
+    }
+
+
+
+
     const id = target.getAttribute('data-id');
 
     if (!id) return;
