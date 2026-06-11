@@ -11,7 +11,7 @@ const db = require('../database/database'); // importa ficheiro db
 function createWindow(){
     //criar a janela
     const window = new BrowserWindow({
-        width: 800,
+        width: 1200,
         height: 600,
         webPreferences:{
             preload: join (__dirname, '../preload/preload.js'),
@@ -19,7 +19,7 @@ function createWindow(){
             contextIsolation: true // nao deixa o front e o back end falarem diretamente um com o outr, tem de passar pelo ipc 
         }
     });
-
+    window.maximize();
     window.loadFile(join(__dirname, '../renderer/index.html'));
 }
 
