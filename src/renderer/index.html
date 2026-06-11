@@ -59,12 +59,28 @@
             <section id="calendario-page" class="page">
                 <div class="full-month-container">
                     <header class="full-month-header">
-                        <div class="month-year-selectors">
-                            <select id="month-select" class="header-select"></select>
-                            <select id="year-select" class="header-select"></select>
-                        </div>
-                        <div class="month-nav-buttons">
+                        <div class="header-left">
                             <button id="btn-prev-month" class="btn-icon">&lt;</button>
+                        </div>
+
+                        <div class="header-center month-year-selectors">
+                            <div class="select-wrapper">
+                                <select id="month-select" class="header-select"></select>
+                                <svg class="select-arrow" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </div>
+
+                            <div class="select-wrapper">
+                                <select id="year-select" class="header-select"></select>
+                                <svg class="select-arrow" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="header-right">
+                            <button id="btn-today-month" class="btn primary">Hoje</button>
                             <button id="btn-next-month" class="btn-icon">&gt;</button>
                         </div>
                     </header>

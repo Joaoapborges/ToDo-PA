@@ -10,7 +10,7 @@ const monthSelect = document.getElementById('month-select');
 const yearSelect = document.getElementById('year-select');
 
 const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-// botao hoje
+// botoes hoje
 if (btnToday) {
     btnToday.addEventListener('click', () => {
         const today = new Date();
@@ -21,6 +21,15 @@ if (btnToday) {
         window.dispatchEvent(new CustomEvent('dateSelected', { 
             detail: { date: today } 
         }));
+    });
+}
+
+const btnTodayMonth = document.getElementById('btn-today-month');
+
+if (btnTodayMonth) {
+    btnTodayMonth.addEventListener('click', () => {
+        currentMonthView = new Date();
+        renderFullMonth();
     });
 }
 

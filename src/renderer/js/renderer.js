@@ -285,9 +285,6 @@ let activeDate = new Date();
 // Escutar as mudanças de dia vindas do calendário
 window.addEventListener('dateSelected', (e) => {
     activeDate = e.detail.date; // Atualizar a data ativa
-    console.log("O ficheiro tasks.js percebeu que a data mudou para:", activeDate);
-    
-    // Voltar a desenhar as tarefas (aplicando o filtro da nova data)
     renderTasks(currentTasks); 
 });
 
