@@ -5,6 +5,22 @@ const weekSlider = document.getElementById('week-slider');
 const monthYearLabel = document.getElementById('calendar-month-year');
 const btnPrevWeek = document.getElementById('btn-prev-week');
 const btnNextWeek = document.getElementById('btn-next-week');
+const btnToday = document.getElementById('btn-today');
+
+// botao hoje
+// botao hoje
+if (btnToday) {
+    btnToday.addEventListener('click', () => {
+        const today = new Date();
+        
+        selectedDate = today; 
+        currentWeekStart = getStartOfWeek(today);
+        renderCalendarWeek(); 
+        window.dispatchEvent(new CustomEvent('dateSelected', { 
+            detail: { date: today } 
+        }));
+    });
+}
 
 
 // FUNÇÃO AUXILIAR 

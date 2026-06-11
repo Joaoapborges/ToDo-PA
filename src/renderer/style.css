@@ -691,3 +691,14 @@ button:disabled {
 .task-description.expanded {
     display: block;
 }
+
+.calendar-footer {
+    display: flex;
+    justify-content: flex-start; /* Alinha o botão à esquerda */
+    margin-top: 15px;
+}
+
+.calendar-footer .btn {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+}
