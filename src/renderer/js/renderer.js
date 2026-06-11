@@ -15,43 +15,6 @@ const confirmModal = document.getElementById('confirm-modal');
 const btnConfirmDelete = document.getElementById('btn-confirm-delete');
 const btnCancelDelete = document.getElementById('btn-cancel-delete');
 
-// (NAVEGAÇÃO) 
-const navButtons = document.querySelectorAll('.nav-btn');
-const pages = document.querySelectorAll('.page');
-
-// (slider semana)
-const weekSlider = document.getElementById('week-slider');
-const monthYearLabel = document.getElementById('calendar-month-year');
-const btnPrevWeek = document.getElementById('btn-prev-week');
-const btnNextWeek = document.getElementById('btn-next-week');
-
-let selectedDate = new Date(); // Dia atualmente clicado
-let currentWeekStart = getStartOfWeek(new Date()); // Segunda-feira da semana visível
-
-// Função utilitária: Descobrir a Segunda-feira
-function getStartOfWeek(date) {
-    const d = new Date(date);
-    d.setHours(0, 0, 0, 0);
-    const day = d.getDay() || 7; 
-    if (day !== 1) d.setHours(-24 * (day - 1)); 
-    return d;
-}
-
-//  LÓGICA DE NAVEGAÇÃO LATERAL
-navButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        // Remover a classe 'active' de todos os botões e páginas
-        navButtons.forEach(btn => btn.classList.remove('active'));
-        pages.forEach(page => page.classList.remove('active'));
-
-        // Adicionar a classe 'active' ao botão clicado
-        button.classList.add('active');
-
-        // Encontrar e mostrar a página correspondente
-        const targetPageId = button.getAttribute('data-target');
-        document.getElementById(targetPageId).classList.add('active');
-    });
-});
 
 // LÓGICA DE CRUD E ESTADO
 
@@ -80,28 +43,52 @@ async function loadTasks() {
 
 // Transformar o array de dados em elementos HTML
 function renderTasks(tasks) {
-    taskList.innerHTML = ''; // Limpar a lista atual
+     taskList.innerHTML = ''; // Limpar a lista atual
 
-    if (tasks.length === 0) {
+     // Obter a string da data de "Hoje" e da "Data Ativa" (selecionada no calendário)
+    const todayString = new Date().toDateString();
+    const activeDateString = activeDate.toDateString();
+
+    
+    // Filtrar as tarefas para mostrar apenas as do dia selecionado
+    const filteredTasks = tasks.filter(task => {
+        if (!task.DueDate) {
+            // Mostra apenas se o dia selecionado no calendário for o dia de "Hoje"
+            return activeDateString === todayString;
+        }
+        
+
+
+        // Se a tarefa TEM data limite:
+        const taskDate = new Date(task.DueDate);
+        // Mostra apenas se bater certo com o dia selecionado no calendário
+        return taskDate.toDateString() === activeDateString;
+    });
+
+
+    if (filteredTasks.length === 0) {
         taskList.innerHTML = `
-            <div style="text-align: center; color: var(--text-secondary); margin-top: 40px;">
-                <p>Não tens tarefas pendentes.</p>
-                <p>Bom trabalho!</p>
+            <div class="empty-state">
+                <p>Não tens tarefas pendentes para este dia.</p>
+                <p>Bom descanso!</p>
             </div>`;
         return;
     }
 
-    tasks.forEach(task => {
+    filteredTasks.forEach(task => {
         const li = document.createElement('li');
-        // Adicionar a classe 'completed' se a tarefa estiver Done (valor 1)
         li.className = `task-item ${task.Done ? 'completed' : ''}`;
         
-        // Formatar a data para exibição (se existir)
         let dateHtml = '';
         if (task.DueDate) {
             const dateObj = new Date(task.DueDate);
-            dateHtml = `<small style="display:block; color: var(--text-secondary); font-size: 0.8em; margin-top: 4px;">
+            dateHtml = `<small class="task-date-info">
                 Prazo: ${dateObj.toLocaleDateString('pt-PT')} às ${dateObj.toLocaleTimeString('pt-PT', {hour: '2-digit', minute:'2-digit'})}
+            </small>`;
+        } else {
+            // Pequeno indicador de que a tarefa não tem data (Opcional)
+            dateHtml = `<small class="task-date-info">
+                Sem prazo definido
             </small>`;
         }
 
@@ -228,45 +215,6 @@ function resetForm() {
 }
 
 
-// Renderizar os 7 dias
-function renderCalendarWeek() {
-    weekSlider.innerHTML = ''; 
-    
-    monthYearLabel.textContent = currentWeekStart.toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' });
-
-    for (let i = 0; i < 7; i++) {
-        const dateObj = new Date(currentWeekStart);
-        dateObj.setDate(currentWeekStart.getDate() + i);
-
-        const isSelected = dateObj.toDateString() === selectedDate.toDateString();
-
-        const dayCard = document.createElement('div');
-        dayCard.className = `day-card ${isSelected ? 'active' : ''}`;
-        
-        const dayName = dateObj.toLocaleDateString('pt-PT', { weekday: 'short' }).replace('.', ''); 
-        const dayNumber = dateObj.getDate();
-
-        dayCard.innerHTML = `
-            <span class="day-name">${dayName}</span>
-            <span class="day-number">${dayNumber}</span>
-        `;
-
-        dayCard.addEventListener('click', () => {
-            selectedDate = dateObj; 
-            renderCalendarWeek(); 
-            
-            // LÓGICA FUTURA: 
-            // Aqui vamos chamar uma função tipo filterTasksByDate(selectedDate) 
-            // para mostrar apenas as tarefas do dia clicado!
-        });
-
-        weekSlider.appendChild(dayCard);
-    }
-}
-
-
-
-
 btnCancel.addEventListener('click', closeModal);
 btnCloseModal.addEventListener('click', closeModal);
 
@@ -283,46 +231,17 @@ window.addEventListener('click', (e) => {
     }
 });
 
-// Eventos dos botões < e > slider semanal
-btnPrevWeek.addEventListener('click', () => {
-    currentWeekStart.setDate(currentWeekStart.getDate() - 7);
-    renderCalendarWeek();
-});
+// Variável para saber qual é a data selecionada atualmente (por defeito é hoje)
+let activeDate = new Date();
 
-btnNextWeek.addEventListener('click', () => {
-    currentWeekStart.setDate(currentWeekStart.getDate() + 7);
-    renderCalendarWeek();
+// Escutar as mudanças de dia vindas do calendário
+window.addEventListener('dateSelected', (e) => {
+    activeDate = e.detail.date; // Atualizar a data ativa
+    console.log("O ficheiro tasks.js percebeu que a data mudou para:", activeDate);
+    
+    // Voltar a desenhar as tarefas (aplicando o filtro da nova data)
+    renderTasks(currentTasks); 
 });
 
 // Inicialização: Carregar tarefas
 loadTasks();
-renderCalendarWeek();
-
-// --- LÓGICA DO TEMA (Modo Claro/Escuro) ---
-
-const btnThemeToggle = document.getElementById('btn-theme-toggle');
-const htmlElement = document.documentElement; // Refere-se à tag <html>
-
-// 1. Carregar o tema guardado quando a aplicação inicia
-const savedTheme = localStorage.getItem('app-theme') || 'light';
-if (savedTheme === 'dark') {
-    htmlElement.setAttribute('data-theme', 'dark');
-    btnThemeToggle.textContent = 'Mudar para Light Mode';
-}
-
-// 2. Alternar o tema ao clicar no botão
-btnThemeToggle.addEventListener('click', () => {
-    const currentTheme = htmlElement.getAttribute('data-theme');
-    
-    if (currentTheme === 'dark') {
-        // Mudar para Light Mode
-        htmlElement.removeAttribute('data-theme');
-        localStorage.setItem('app-theme', 'light');
-        btnThemeToggle.textContent = 'Mudar para Dark Mode';
-    } else {
-        // Mudar para Dark Mode
-        htmlElement.setAttribute('data-theme', 'dark');
-        localStorage.setItem('app-theme', 'dark');
-        btnThemeToggle.textContent = 'Mudar para Light Mode';
-    }
-});
