@@ -36,6 +36,7 @@ async function loadTasks() {
     try {
         currentTasks = await window.todoAPI.getItems();
         renderTasks(currentTasks);
+        window.dispatchEvent(new Event('tasksUpdated'));
     } catch (error) {
         console.error('Erro ao carregar tarefas do SQLite:', error);
     }

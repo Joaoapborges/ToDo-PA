@@ -1,139 +1,119 @@
 # TodoBackup (Electron + SQLite)
 
-Projeto Electron para gerir uma lista de tarefas (CRUD) guardada numa base de dados SQLite.
+Aplicação **desktop** (Electron) para gerir tarefas (**CRUD**) e guardá-las em **SQLite**.
+
+> UI inclui navegação lateral, página de tarefas com **filtro por semana/dia**, modais para adicionar/editar e confirmação ao apagar, além de **tema (Light/Dark)**.
 
 ## Tecnologias
+- **Electron** (main/renderer)
+- **SQLite** (`sqlite3`)
+- **IPC seguro** via `preload.js` (`contextBridge` + `ipcMain.handle`)
 
-- Electron (main/renderer)
-- SQLite (`sqlite3`)
-- IPC seguro via `preload.js` (`contextBridge` + `ipcMain.handle`)
-
-## Estrutura do Projeto
-
+## Arquitetura (backend)
 ### `src/main/main.js`
-
-Responsável por:
-
-- Criar a janela do Electron
-- Inicializar a base de dados SQLite
-- Registar os handlers IPC:
+- Cria a janela do Electron
+- Inicializa a base de dados
+- Regista handlers IPC:
   - `db:getItems`
   - `db:saveItem`
   - `db:deleteItem`
 
 ### `src/preload/preload.js`
-
-Exponibiliza no frontend a API:
-
-```javascript
+Expõe no renderer:
+```js
 window.todoAPI = {
-  getItems(),
-  saveItem(item),
-  deleteItem(id)
+  getItems: () => ipcRenderer.invoke('db:getItems'),
+  saveItem: (item) => ipcRenderer.invoke('db:saveItem', item),
+  deleteItem: (id) => ipcRenderer.invoke('db:deleteItem', id)
 };
 ```
 
 ### `src/database/database.js`
-
-Responsável por:
-
-- Abrir/criar a base de dados
-- Criar a tabela `TodoItem`
-- Implementar os métodos:
+- DB em: `app.getPath('userData')/todo.db`
+- Cria tabela `TodoItem` (se não existir)
+- Implementa:
   - `InitDatabase()`
   - `GetItemsAsync()`
-  - `SaveItemAsync(item)` (UPDATE ou INSERT)
+  - `SaveItemAsync(item)` (faz `INSERT` ou `UPDATE`)
   - `DeleteItemAsync(id)`
 
+## Interface (frontend)
 ### `src/renderer/index.html`
+- Layout com **sidebar** e páginas:
+  - `Tarefas` (`#tarefas-page`)
+  - `Calendário` (`#calendario-page`) 
+  - `Settings` (`#settings-page`)
+- Página **Tarefas** inclui:
+  - header com botão **+ Nova Tarefa**
+  - **slider semanal** (7 dias) + botão **Voltar ao dia de Hoje**
+  - lista `#task-list`
+- Modais:
+  - `#task-modal` (Adicionar/Editar)
+  - `#confirm-modal` (confirmar apagar)
 
-Interface gráfica:
+### `src/renderer/js/renderer.js`
+- Carrega tarefas via `window.todoAPI.getItems()`
+- Renderiza a lista
+- Implementa o CRUD via `saveItem` e `deleteItem`
+- **Filtro por data selecionada no calendário**:
+  - mostra tarefas cujo `DueDate` bate com a data ativa
+- Permite:
+  - marcar/desmarcar concluída (checkbox)
+  - expandir/colapsar a descrição (notas)
+  - editar a tarefa (preenche o modal)
+  - apagar (modal de confirmação)
 
-- Lista de tarefas
-- Modal para adicionar/editar tarefas
-- Modal de confirmação para apagar tarefas
+### `src/renderer/js/calendar.js`
+- Renderiza a semana em `#week-slider`
+- Mantém `selectedDate` / `currentWeekStart`
+- Dispara evento:
+  - `window.dispatchEvent(new CustomEvent('dateSelected', { detail: { date } }))`
 
-### `src/renderer/renderer.js`
+### `src/renderer/js/theme.js`
+- Tema guardado em `localStorage` (`light`/`dark`)
+- Alterna `data-theme` no `documentElement`
 
-Contém a lógica do frontend:
+### `src/renderer/js/navigation.js`
+- Navegação entre páginas na sidebar (toggle `.active`)
 
-- Carregamento dos dados
-- Renderização da lista
-- Gestão de eventos
-- Operações CRUD
-
-### `src/renderer/style.css`
-
-Responsável pelos estilos:
-
-- Layout da aplicação
-- Botões
-- Modais
-
-## Funcionalidades
-
-### Adicionar e Editar tarefa
-
-- Através de modal dedicado
-
-### Concluir / Desconcluir tarefa
-
-- Utilização de checkbox na lista
-- O campo `Done` é guardado como `0` ou `1` no SQLite
-- `CompletedAt` é definido quando a tarefa é concluída
-- `CompletedAt` é limpo quando a tarefa é desconcluída
-
-### Apagar tarefa
-
-- Modal de confirmação antes da remoção
-
-### Data Limite de conclusão (`DueDate`)
-
-- Campo opcional
-- Apresentado na lista quando definido
-
-## Base de Dados (SQLite)
-
-### Tabela: `TodoItem`
+## Modelo de dados (SQLite)
+Tabela: `TodoItem`
 
 | Campo | Tipo | Descrição |
-|---------|---------|---------|
-| ID | INTEGER PRIMARY KEY AUTOINCREMENT | Identificador único |
-| Name | TEXT NOT NULL | Nome da tarefa |
-| Notes | TEXT | Notas adicionais |
-| Done | INTEGER DEFAULT 0 | Estado da tarefa |
-| CreatedAt | DATETIME DEFAULT CURRENT_TIMESTAMP | Data de criação |
-| DueDate | DATETIME | Data limite |
-| CompletedAt | DATETIME | Data de conclusão |
+|---|---|---|
+| `ID` | INTEGER (PK AUTOINCREMENT) | identificador |
+| `Name` | TEXT NOT NULL | título da tarefa |
+| `Notes` | TEXT | descrição/linhas adicionais |
+| `Done` | INTEGER DEFAULT 0 | concluída (0/1) |
+| `CreatedAt` | DATETIME DEFAULT CURRENT_TIMESTAMP | criação |
+| `DueDate` | DATETIME | data limite (opcional) |
+| `CompletedAt` | DATETIME | quando foi concluída (opcional) |
 
-## Como Executar
+### Como o “Done” é tratado
+- No renderer, `Done` é usado como **boolean** (`true/false`)
+- No SQLite é guardado como **0/1**
 
-### Instalar dependências
+## Funcionalidades principais (conforme a app atual)
+- **Adicionar tarefa** (modal)
+- **Editar tarefa** (modal)
+- **Concluir/Desconcluir** via checkbox na lista
+- **Filtro de tarefas por data selecionada** (slider semanal)
+- **Expandir notas** (descrição)
+- **Apagar com confirmação**
+- **Tema Light/Dark**
+- **Navegação lateral** entre Tarefas / Calendário / Settings
 
+## Como executar
 ```bash
 npm install
-```
-
-### Iniciar a aplicação
-
-```bash
 npm start
 ```
 
 ## Scripts (`package.json`)
+- `start`: `electron .`
 
-```json
-{
-  "start": "electron ."
-}
-```
-
-## Nota de Segurança
-
-A aplicação segue boas práticas de segurança no Electron:
-
+## Nota de segurança (Electron)
 - `nodeIntegration: false`
 - `contextIsolation: true`
-- Comunicação entre frontend e backend apenas via IPC
+- renderer não acessa Node diretamente; tudo passa por IPC (via preload)
 
-Isto evita o acesso direto às APIs do Node.js a partir do renderer, reduzindo riscos de segurança.

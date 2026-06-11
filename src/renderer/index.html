@@ -57,8 +57,25 @@
             </section>
 
             <section id="calendario-page" class="page">
-                <h1>Calendário</h1>
-                <p>A carregar interface do calendário...</p>
+                <div class="full-month-container">
+                    <header class="full-month-header">
+                        <div class="month-year-selectors">
+                            <select id="month-select" class="header-select"></select>
+                            <select id="year-select" class="header-select"></select>
+                        </div>
+                        <div class="month-nav-buttons">
+                            <button id="btn-prev-month" class="btn-icon">&lt;</button>
+                            <button id="btn-next-month" class="btn-icon">&gt;</button>
+                        </div>
+                    </header>
+
+                    <div class="month-grid-weekdays">
+                        <span>SUN</span><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span>
+                    </div>
+
+                    <div id="month-grid" class="month-grid">
+                        </div>
+                </div>
             </section>
 
             <section id="settings-page" class="page">
