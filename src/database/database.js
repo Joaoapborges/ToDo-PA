@@ -31,7 +31,8 @@ function InitDatabase(){
 
                 CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
                 DueDate DATETIME,
-                CompletedAt DATETIME
+                CompletedAt DATETIME,
+                SortOrder INTEGER DEFAULT 0
             )
             `;
             
@@ -44,10 +45,36 @@ function InitDatabase(){
 });
 }
 
+// Atualizar a ordem de vários itens de uma vez
+function UpdateItemsOrderAsync(orderedIds) {
+    return new Promise((resolve, reject) => {
+        db.serialize(() => {
+            db.run('BEGIN TRANSACTION;');
+            
+            const stmt = db.prepare('UPDATE TodoItem SET SortOrder = ? WHERE ID = ?;');
+            
+            orderedIds.forEach((id, index) => {
+                stmt.run(index, id);
+            });
+            
+            stmt.finalize();
+            
+            db.run('COMMIT;', function(err) {
+                if (err) {
+                    console.error("Erro na reordenação:", err);
+                    reject(err);
+                } else {
+                    resolve(true);
+                }
+            });
+        });
+    });
+}
+
 // Ler todos os itens da base de dados.
 function GetItemsAsync() {
     return new Promise((resolve, reject) => {
-        db.all("SELECT * FROM TodoItem", [], (err, rows) => {
+        db.all("SELECT * FROM TodoItem ORDER BY SortOrder ASC", [], (err, rows) => {
             if (err) {
                 reject(err);
                 return;
@@ -149,5 +176,6 @@ module.exports = {
     InitDatabase,
     GetItemsAsync,
     SaveItemAsync,
-    DeleteItemAsync
+    DeleteItemAsync,
+    UpdateItemsOrderAsync
 };

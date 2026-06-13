@@ -59,7 +59,6 @@ function renderTasks(tasks) {
         }
         
 
-
         // Se a tarefa TEM data limite:
         const taskDate = new Date(task.DueDate);
         // Mostra apenas se bater certo com o dia selecionado no calendário
@@ -80,6 +79,10 @@ function renderTasks(tasks) {
         const li = document.createElement('li');
         li.className = `task-item ${task.Done ? 'completed' : ''}`;
         
+        // Adicionar atributos para o Drag & Drop
+        li.setAttribute('draggable', 'true');
+        li.setAttribute('data-id', task.ID); 
+
         let dateHtml = '';
         if (task.DueDate) {
             const dateObj = new Date(task.DueDate);
@@ -179,8 +182,6 @@ taskList.addEventListener('click', async (e) => {
     }
 
 
-
-
     const id = target.getAttribute('data-id');
 
     if (!id) return;
@@ -233,6 +234,76 @@ taskList.addEventListener('click', async (e) => {
         }
     }
 });
+
+
+// LÓGICA DE DRAG E DROP NATIVO 
+function setupDragAndDrop() {
+    let draggedItem = null;
+
+    // Quando começamos a arrastar
+    taskList.addEventListener('dragstart', (e) => {
+        const item = e.target.closest('.task-item');
+        if (!item) return;
+
+        draggedItem = item;
+        setTimeout(() => item.classList.add('dragging'), 0);
+    });
+
+    // Quando o item é largado ou o arrasto termina
+    taskList.addEventListener('dragend', async (e) => {
+        if (!draggedItem) return;
+        
+        draggedItem.classList.remove('dragging');
+        draggedItem = null;
+
+        // Lê a nova ordem visual do DOM (recolhe os data-ids dos <li>)
+        const currentItems = [...taskList.querySelectorAll('.task-item')];
+        const orderedIds = currentItems.map(item => parseInt(item.getAttribute('data-id')));
+
+        try {
+            // Envia a nova ordem para o backend
+            await window.todoAPI.updateItemsOrder(orderedIds);
+            
+            // Recarrega o estado em memória para não perdermos a consistência
+            currentTasks = await window.todoAPI.getItems();
+            window.dispatchEvent(new Event('tasksUpdated'));
+        } catch (error) {
+            console.error("Erro ao guardar nova ordem:", error);
+        }
+    });
+
+    // Reordenar os elementos no ecrã enquanto arrastamos
+    taskList.addEventListener('dragover', (e) => {
+        e.preventDefault(); // Obrigatório para permitir o "drop"
+        
+        if (!draggedItem) return;
+
+        const afterElement = getDragAfterElement(taskList, e.clientY);
+        
+        if (afterElement == null) {
+            taskList.appendChild(draggedItem);
+        } else {
+            taskList.insertBefore(draggedItem, afterElement);
+        }
+    });
+}
+
+// Descobre atrás de que elemento o rato está a passar
+function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.task-item:not(.dragging)')];
+
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
 
 // FUNÇÕES UTILITÁRIAS DE INTERFACE
 
@@ -288,5 +359,7 @@ window.addEventListener('dateSelected', (e) => {
     renderTasks(currentTasks); 
 });
 
-// Inicialização: Carregar tarefas
+
+// Inicialização: Configura eventos e carrega tarefas
+setupDragAndDrop();
 loadTasks();

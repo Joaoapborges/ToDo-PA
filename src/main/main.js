@@ -42,6 +42,10 @@ app.whenReady().then(async () => {
         ipcMain.handle('db:deleteItem', async (event, id) => {
             return await db.DeleteItemAsync(id);
         });
+        
+        ipcMain.handle('db:updateItemsOrder', async (event, orderedIds) => {
+            return await db.UpdateItemsOrderAsync(orderedIds);
+        });
 
         // Cria a janela
         createWindow();

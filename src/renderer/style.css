@@ -301,6 +301,14 @@ body {
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 2px 8px var(--shadow-light);
+    cursor: grab;
+}
+
+/* Quando o utilizador pega no cartão */
+.task-item.dragging {
+    opacity: 0.4;
+    border: 2px dashed #4285f4; /* Podes mudar esta cor para o azul do teu tema */
+    cursor: grabbing;
 }
 
 .task-info {
