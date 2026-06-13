@@ -12,6 +12,13 @@ const btnNext = document.getElementById('widget-next-day');
 const btnPin = document.getElementById('btn-pin');
 const btnClose = document.getElementById('btn-close-widget');
 const btnAdd = document.getElementById('btn-widget-add');
+const confirmModal = document.getElementById('widget-confirm-modal');
+const btnConfirmDelete = document.getElementById('widget-btn-confirm-delete');
+const btnCancelDelete = document.getElementById('widget-btn-cancel-delete');
+
+btnCancelDelete.addEventListener('click', () => {
+    confirmModal.classList.remove('show');
+});
 
 // --- DATA ---
 function formatDateLabel(date) {
@@ -88,7 +95,24 @@ function renderWidgetTasks() {
             <div class="widget-task-header">
                 <input type="checkbox" ${task.Done ? 'checked' : ''} data-id="${task.ID}">
                 <span class="widget-task-name">${task.Name}</span>
-                ${expandBtnHtml}
+                <div class="widget-task-actions">
+                    ${expandBtnHtml}
+                    <button class="widget-btn-edit" data-id="${task.ID}" title="Editar">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </button>
+                    <button class="widget-btn-delete" data-id="${task.ID}" title="Apagar">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="#ef4444" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6l-1 14H6L5 6"></path>
+                            <path d="M10 11v6"></path>
+                            <path d="M14 11v6"></path>
+                            <path d="M9 6V4h6v2"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
             ${descriptionHtml}
         `;
@@ -111,6 +135,30 @@ function renderWidgetTasks() {
             });
         }
 
+        // Editar
+        li.querySelector('.widget-btn-edit').addEventListener('click', () => {
+            const taskToEdit = allTasks.find(t => t.ID === task.ID);
+            if (taskToEdit) {
+                // Preencher o modal com os dados da tarefa
+                widgetItemName.value = taskToEdit.Name;
+                widgetItemNotes.value = taskToEdit.Notes || '';
+                document.getElementById('widget-item-id').value = taskToEdit.ID;
+                addModal.classList.add('show');
+                widgetItemName.focus();
+            }
+        });
+
+        // Apagar
+        li.querySelector('.widget-btn-delete').addEventListener('click', () => {
+            confirmModal.classList.add('show');
+
+            btnConfirmDelete.onclick = async () => {
+                await window.todoAPI.deleteItem(task.ID);
+                window.todoAPI.notifyTasksChanged();
+                confirmModal.classList.remove('show');
+                await loadAndRender();
+            };
+        });
         taskList.appendChild(li);
     });
 
@@ -178,6 +226,9 @@ function openWidgetModal() {
 
 function closeWidgetModal() {
     addModal.classList.remove('show');
+    widgetItemName.value = '';
+    widgetItemNotes.value = '';
+    document.getElementById('widget-item-id').value = ''; // ← limpar ID
 }
 
 btnAdd.addEventListener('click', openWidgetModal);
@@ -196,9 +247,12 @@ widgetForm.addEventListener('submit', async (e) => {
     if (!name) return;
 
     const isToday = widgetDate.toDateString() === new Date().toDateString();
-    const dueDate = isToday ? null : widgetDate.toISOString();
+    const dueDate = isToday 
+        ? new Date(widgetDate.setHours(23, 59, 0, 0)).toISOString() // ← fim do dia de hoje
+        : widgetDate.toISOString();    const existingId = document.getElementById('widget-item-id').value;
 
     await window.todoAPI.saveItem({
+        ID: existingId ? parseInt(existingId) : null,
         Name: name,
         Notes: widgetItemNotes.value,
         Done: 0,
