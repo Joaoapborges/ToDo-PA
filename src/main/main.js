@@ -41,7 +41,7 @@ function createWidgetWindow() {
         transparent: true,      // fundo transparente (para CSS arredondado)
         resizable: false,
         alwaysOnTop: false,     // começa desativado (o utilizador controla com o pin)
-        skipTaskbar: true,      // não aparece na taskbar
+        skipTaskbar: false,      
         webPreferences: {
             preload: join(__dirname, '../preload/preload.js'),
             nodeIntegration: false,

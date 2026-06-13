@@ -15,6 +15,24 @@ const btnAdd = document.getElementById('btn-widget-add');
 const confirmModal = document.getElementById('widget-confirm-modal');
 const btnConfirmDelete = document.getElementById('widget-btn-confirm-delete');
 const btnCancelDelete = document.getElementById('widget-btn-cancel-delete');
+const btnTodayWidget = document.getElementById('btn-today-widget');
+
+btnTodayWidget.addEventListener('click', () => {
+    widgetDate = new Date();
+    updateDateLabel();
+    updateTodayBtn();
+    renderWidgetTasks();
+});
+
+// Atualiza a visibilidade do botão sempre que o dia muda
+function updateTodayBtn() {
+    const isToday = widgetDate.toDateString() === new Date().toDateString();
+    if (isToday) {
+        btnTodayWidget.classList.add('hidden');
+    } else {
+        btnTodayWidget.classList.remove('hidden');
+    }
+}
 
 btnCancelDelete.addEventListener('click', () => {
     confirmModal.classList.remove('show');
@@ -40,12 +58,14 @@ function updateDateLabel() {
 btnPrev.addEventListener('click', () => {
     widgetDate.setDate(widgetDate.getDate() - 1);
     updateDateLabel();
+    updateTodayBtn();
     renderWidgetTasks();
 });
 
 btnNext.addEventListener('click', () => {
     widgetDate.setDate(widgetDate.getDate() + 1);
     updateDateLabel();
+    updateTodayBtn(); 
     renderWidgetTasks();
 });
 
