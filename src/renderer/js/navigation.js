@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Encontrar e mostrar a página correspondente
             const targetPageId = button.getAttribute('data-target');
+            const targetPage = document.getElementById(targetPageId);
+
             document.getElementById(targetPageId).classList.add('active');
 
             // Previne erros verificando se a secção realmente existe antes de a tornar visível

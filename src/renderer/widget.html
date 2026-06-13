@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget</title>
+    <link rel="stylesheet" href="widget.css">
+</head>
+<body>
+    <div class="widget-container">
+        
+        <!-- Barra de topo: arrastar + pin + fechar -->
+        <div class="widget-titlebar" id="widget-titlebar">
+            <span class="widget-title">To Do</span>
+            <div class="widget-controls">
+                <button id="btn-pin" class="widget-btn" title="Fixar no topo">📌</button>
+                <button id="btn-close-widget" class="widget-btn" title="Fechar">✕</button>
+            </div>
+        </div>
+
+        <!-- Navegação de dia -->
+        <div class="widget-date-nav">
+            <button id="widget-prev-day" class="widget-nav-btn">‹</button>
+            <span id="widget-date-label">Hoje</span>
+            <button id="widget-next-day" class="widget-nav-btn">›</button>
+        </div>
+
+        <!-- Lista de tarefas -->
+        <ul id="widget-task-list" class="widget-task-list">
+            <!-- tarefas renderizadas via JS -->
+        </ul>
+
+        <!-- Botão adicionar -->
+        <div class="widget-footer">
+            <button id="btn-widget-add" class="widget-add-btn">+ Nova Tarefa</button>
+        </div>
+
+    </div>
+
+    <script src="./js/widget.js"></script>
+</body>
+</html>

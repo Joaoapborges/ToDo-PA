@@ -8,20 +8,56 @@ const { join } = require('path');
 const os = require('os');
 const db = require('../database/database'); // importa ficheiro db
 
+let mainWindow = null;
+let widgetWindow = null; 
+
 function createWindow(){
     //criar a janela
-    const window = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         width: 1200,
         height: 600,
-        webPreferences:{
-            preload: join (__dirname, '../preload/preload.js'),
+        webPreferences: {
+            preload: join(__dirname, '../preload/preload.js'),
             nodeIntegration: false,
-            contextIsolation: true // nao deixa o front e o back end falarem diretamente um com o outr, tem de passar pelo ipc 
+            contextIsolation: true
         }
     });
-    window.maximize();
-    window.loadFile(join(__dirname, '../renderer/index.html'));
+    mainWindow.maximize();
+    mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
 }
+
+
+function createWidgetWindow() {
+    // Se já existe, apenas traz para a frente
+    if (widgetWindow) {
+        widgetWindow.focus();
+        return;
+    }
+
+    widgetWindow = new BrowserWindow({
+        width: 340,
+        height: 500,
+        frame: false,           // sem barra de título do SO
+        transparent: true,      // fundo transparente (para CSS arredondado)
+        resizable: false,
+        alwaysOnTop: false,     // começa desativado (o utilizador controla com o pin)
+        skipTaskbar: true,      // não aparece na taskbar
+        webPreferences: {
+            preload: join(__dirname, '../preload/preload.js'),
+            nodeIntegration: false,
+            contextIsolation: true
+        }
+    });
+
+
+widgetWindow.loadFile(join(__dirname, '../renderer/widget.html'));
+
+    // Limpa a referência quando o widget é fechado
+    widgetWindow.on('closed', () => {
+        widgetWindow = null;
+    });
+}
+
 
 // Quando o Electron estiver pronto, iniciamos tudo
 app.whenReady().then(async () => {
@@ -47,6 +83,10 @@ app.whenReady().then(async () => {
             return await db.UpdateItemsOrderAsync(orderedIds);
         });
 
+        ipcMain.handle('widget:open', () => {
+            createWidgetWindow();
+        });
+
         // Cria a janela
         createWindow();
 
@@ -57,7 +97,5 @@ app.whenReady().then(async () => {
 
 // Encerra a app quando todas as janelas forem fechadas
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
+    if (process.platform !== 'darwin') app.quit();
 });

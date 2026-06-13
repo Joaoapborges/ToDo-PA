@@ -6,5 +6,6 @@ contextBridge.exposeInMainWorld('todoAPI', {
     getItems: () => ipcRenderer.invoke('db:getItems'),
     saveItem: (item) => ipcRenderer.invoke('db:saveItem', item),
     deleteItem: (id) => ipcRenderer.invoke('db:deleteItem', id),
-    updateItemsOrder: (orderedIds) => ipcRenderer.invoke('db:updateItemsOrder', orderedIds)
+    updateItemsOrder: (orderedIds) => ipcRenderer.invoke('db:updateItemsOrder', orderedIds),
+    openWidget: () => ipcRenderer.invoke('widget:open')
 });
