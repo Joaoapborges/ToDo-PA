@@ -359,6 +359,10 @@ window.addEventListener('dateSelected', (e) => {
     renderTasks(currentTasks); 
 });
 
+window.todoAPI.onTasksRefresh(() => {
+    loadTasks();
+});
+
 
 // Inicialização: Configura eventos e carrega tarefas
 setupDragAndDrop();

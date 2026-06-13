@@ -87,6 +87,12 @@ app.whenReady().then(async () => {
             createWidgetWindow();
         });
 
+        ipcMain.handle('tasks:changed', () => {
+            if (mainWindow && !mainWindow.isDestroyed()) {
+                mainWindow.webContents.send('tasks:refresh');
+            }
+        });
+
         // Cria a janela
         createWindow();
 

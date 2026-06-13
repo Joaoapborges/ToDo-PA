@@ -1,4 +1,3 @@
-
 // WIDGET
 
 // Estado
@@ -71,17 +70,46 @@ function renderWidgetTasks() {
         li.setAttribute('draggable', 'true');
         li.setAttribute('data-id', task.ID);
 
+        const expandBtnHtml = task.Notes && task.Notes.trim() !== '' ? `
+            <button class="btn-expand" aria-label="Expandir descrição">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+        ` : '';
+
+        const descriptionHtml = task.Notes && task.Notes.trim() !== '' ? `
+            <div class="widget-task-description">
+                ${task.Notes.replace(/\n/g, '<br>')}
+            </div>
+        ` : '';
+
         li.innerHTML = `
-            <input type="checkbox" ${task.Done ? 'checked' : ''} data-id="${task.ID}">
-            <span class="widget-task-name">${task.Name}</span>
+            <div class="widget-task-header">
+                <input type="checkbox" ${task.Done ? 'checked' : ''} data-id="${task.ID}">
+                <span class="widget-task-name">${task.Name}</span>
+                ${expandBtnHtml}
+            </div>
+            ${descriptionHtml}
         `;
 
         // Toggle done
         li.querySelector('input').addEventListener('change', async (e) => {
             const updated = { ...task, Done: e.target.checked ? 1 : 0 };
             await window.todoAPI.saveItem(updated);
+            window.todoAPI.notifyTasksChanged();
             await loadAndRender();
         });
+
+        // Expandir notas
+        const expandBtn = li.querySelector('.btn-expand');
+        if (expandBtn) {
+            expandBtn.addEventListener('click', () => {
+                const description = li.querySelector('.widget-task-description');
+                description.classList.toggle('expanded');
+                expandBtn.classList.toggle('open');
+            });
+        }
 
         taskList.appendChild(li);
     });
@@ -108,6 +136,7 @@ function setupWidgetDragAndDrop() {
         const items = [...taskList.querySelectorAll('.widget-task-item')];
         const orderedIds = items.map(i => parseInt(i.getAttribute('data-id')));
         await window.todoAPI.updateItemsOrder(orderedIds);
+        window.todoAPI.notifyTasksChanged();
         allTasks = await window.todoAPI.getItems();
     });
 
@@ -133,20 +162,60 @@ function getDragAfterElement(container, y) {
 // --- CONTROLOS ---
 btnClose.addEventListener('click', () => window.close());
 
-// Botão + abre o modal de nova tarefa 
-btnAdd.addEventListener('click', async () => {
-    const name = prompt('Nome da tarefa:');
-    if (!name || !name.trim()) return;
+// --- MODAL DE NOVA TAREFA ---
+const addModal = document.getElementById('widget-task-modal');
+const widgetForm = document.getElementById('widget-task-form');
+const widgetItemName = document.getElementById('widget-item-name');
+const widgetItemNotes = document.getElementById('widget-item-notes');
+const widgetCloseModal = document.getElementById('widget-close-modal');
 
-    const dueDate = widgetDate.toDateString() === new Date().toDateString()
-        ? null
-        : widgetDate.toISOString();
+function openWidgetModal() {
+    widgetItemName.value = '';
+    widgetItemNotes.value = '';
+    addModal.classList.add('show');
+    widgetItemName.focus();
+}
 
-    await window.todoAPI.saveItem({ Name: name.trim(), Notes: '', Done: 0, DueDate: dueDate });
+function closeWidgetModal() {
+    addModal.classList.remove('show');
+}
+
+btnAdd.addEventListener('click', openWidgetModal);
+widgetCloseModal.addEventListener('click', closeWidgetModal);
+
+// Fechar ao clicar fora
+addModal.addEventListener('click', (e) => {
+    if (e.target === addModal) closeWidgetModal();
+});
+
+// Submeter
+widgetForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name = widgetItemName.value.trim();
+    if (!name) return;
+
+    const isToday = widgetDate.toDateString() === new Date().toDateString();
+    const dueDate = isToday ? null : widgetDate.toISOString();
+
+    await window.todoAPI.saveItem({
+        Name: name,
+        Notes: widgetItemNotes.value,
+        Done: 0,
+        DueDate: dueDate
+    });
+
+    window.todoAPI.notifyTasksChanged();
+    closeWidgetModal();
     await loadAndRender();
 });
 
-// --- PIN (alwaysOnTop) --- 
+// Fechar com Escape
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeWidgetModal();
+});
+
+// --- PIN (alwaysOnTop) ---
 
 // --- INIT ---
 updateDateLabel();
