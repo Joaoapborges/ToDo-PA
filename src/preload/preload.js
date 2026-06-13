@@ -9,5 +9,6 @@ contextBridge.exposeInMainWorld('todoAPI', {
     updateItemsOrder: (orderedIds) => ipcRenderer.invoke('db:updateItemsOrder', orderedIds),
     openWidget: () => ipcRenderer.invoke('widget:open'),
     notifyTasksChanged: () => ipcRenderer.invoke('tasks:changed'),
-    onTasksRefresh: (callback) => ipcRenderer.on('tasks:refresh', () => callback())
+    onTasksRefresh: (callback) => ipcRenderer.on('tasks:refresh', () => callback()),
+    togglePin: (pinned) => ipcRenderer.invoke('widget:togglePin', pinned)
 });

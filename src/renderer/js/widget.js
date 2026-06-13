@@ -217,6 +217,23 @@ document.addEventListener('keydown', (e) => {
 
 // --- PIN (alwaysOnTop) ---
 
+// --- PIN ---
+let isPinned = false;
+
+btnPin.addEventListener('click', async () => {
+    isPinned = !isPinned;
+    await window.todoAPI.togglePin(isPinned);
+
+    // Feedback visual
+    if (isPinned) {
+        btnPin.classList.add('pinned');
+        btnPin.title = 'Desafixar';
+    } else {
+        btnPin.classList.remove('pinned');
+        btnPin.title = 'Fixar no topo';
+    }
+});
+
 // --- INIT ---
 updateDateLabel();
 loadAndRender();

@@ -55,6 +55,14 @@ widgetWindow.loadFile(join(__dirname, '../renderer/widget.html'));
     // Limpa a referência quando o widget é fechado
     widgetWindow.on('closed', () => {
         widgetWindow = null;
+
+         // Se a janela principal não existir ou estiver destruída, abre-a
+        if (!mainWindow || mainWindow.isDestroyed()) {
+            createWindow();
+        } else {
+            // Se existir mas estiver escondida, mostra-a
+            mainWindow.show();
+        }
     });
 }
 
@@ -90,6 +98,20 @@ app.whenReady().then(async () => {
         ipcMain.handle('tasks:changed', () => {
             if (mainWindow && !mainWindow.isDestroyed()) {
                 mainWindow.webContents.send('tasks:refresh');
+            }
+        });
+
+        ipcMain.handle('widget:togglePin', (event, pinned) => {
+            if (widgetWindow && !widgetWindow.isDestroyed()) {
+                if (pinned) {
+                    // Pin ativo: sempre no topo, escondido da taskbar
+                    widgetWindow.setAlwaysOnTop(true, 'screen-saver');
+                    widgetWindow.setSkipTaskbar(true);
+                } else {
+                    // Pin desativo: comportamento normal, aparece na taskbar
+                    widgetWindow.setAlwaysOnTop(false);
+                    widgetWindow.setSkipTaskbar(false);
+                }
             }
         });
 
