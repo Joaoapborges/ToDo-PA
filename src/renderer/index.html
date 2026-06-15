@@ -26,7 +26,7 @@
                     
                     <header class="list-header">
                         <div class="header-titles">
-                            <h1 id="user-greeting">Olá, Alex!</h1>
+                            <h1 id="user-greeting">Olá, Utilizador!</h1>
                             <h4 id="day-greeting">Aqui está a tua agenda para hoje.</h4>
                         </div>
                         <button id="btn-new-task" class="btn primary">+ Nova Tarefa</button>
@@ -104,13 +104,19 @@
                     <div class="settings-card">
                         <div class="settings-info">
                             <h3>Perfil do Utilizador</h3>
-                            <p>Atualiza a tua foto de perfil e o teu nome.</p>
+                            <p>Atualiza o teu nome.</p>
                         </div>
                         
                         <div class="settings-action profile-preview">
-                            <div class="profile-avatar">A</div>
-                            <span class="profile-name">Alex</span>
-                            <button class="btn secondary" disabled title="Estará disponível em breve">Editar Perfil</button>
+                            <div class="profile-current-info">
+                                <div class="profile-avatar" id="avatar-initial">J</div>
+                                <span class="profile-name" id="display-name">João</span>
+                            </div>
+                            
+                            <div class="profile-edit-controls">
+                                <input type="text" id="name-input" class="modern-input" placeholder="Novo nome..." />
+                                <button id="btn-change-name" class="btn secondary">Alterar</button>
+                            </div>
                         </div>
                     </div>
 
@@ -192,5 +198,6 @@
     <script src="./js/navigation.js"></script>
     <script src="./js/theme.js"></script>
     <script src="./js/widget-launcher.js"></script>
+    <script src="./js/settings.js"></script>
 </body>
 </html>

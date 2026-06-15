@@ -981,3 +981,45 @@ button:disabled {
     align-items: center;
     justify-content: center;
 }
+
+/* Organizar o layout do cartão de perfil */
+.profile-preview {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Mudámos de space-between para flex-end */
+    gap: 32px; /* Espaço generoso entre o grupo do Nome e o grupo de Editar */
+    flex: 1; /* Garante que ocupa o espaço restante de forma correta */
+}
+
+/* Alinhar o avatar e o nome */
+.profile-current-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Alinhar a caixa de texto e o botão */
+.profile-edit-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Estilizar a caixa de texto para ficar moderna */
+.modern-input {
+    padding: 8px 16px;
+    border: 1px solid #d1d5db; /* Cinza claro */
+    border-radius: 8px; /* Cantos arredondados parecidos com os do botão */
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: #333;
+    outline: none;
+    transition: all 0.2s ease;
+    width: 180px; /* Largura base */
+}
+
+/* Efeito ao clicar na caixa de texto */
+.modern-input:focus {
+    border-color: #3b82f6; /* Azul a combinar com o teu avatar */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
