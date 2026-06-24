@@ -1,38 +1,42 @@
-# TodoBackup (Electron + SQLite)
+# TaskManager — Electron + SQLite
 
-Aplicação desktop (Electron) para gerir tarefas (CRUD) e guardá-las em SQLite.
+🎬 [Ver demonstração no YouTube](https://youtu.be/V2R7w6GffoM)
 
-> UI com navegação lateral, tarefas com filtro por data e suporte a tema (Light/Dark).
+Aplicação desktop desenvolvida como projeto pessoal para gerir tarefas do dia-a-dia, com armazenamento local em SQLite e um widget flutuante sempre visível no ecrã.
+
+> UI com navegação lateral, filtro por data e suporte a tema Light/Dark.
 
 ## Tecnologias
+
 - **Electron** (main/renderer)
 - **SQLite** (`sqlite3`)
 - **IPC seguro** via `preload.js`
 
 ## Funcionalidades
+
+- Widget flutuante (pin/close) com as tarefas do dia, sempre acessível
 - Adicionar / editar / apagar tarefas (com modais e confirmação)
 - Marcar concluída (checkbox)
 - Filtro por **data** (slider semanal + navegação dia-a-dia)
 - Expandir notas
 - Tema **Light/Dark**
-- Widget flutuante (pin/close) para tarefas do dia
 
 ## Como executar
+
 ```bash
 npm install
 npm start
 ```
 
-## Próximos objetivos
+## Roadmap
+
 - Editar **nome** e **fotografia de perfil** nas **Settings**
 - Fazer o **widget** receber o **tema escuro** da app
 - Ajustar **cores** do **tema escuro** (no widget)
-- Integrar tarefas do **Google calendar**
+- Integrar tarefas do **Google Calendar**
 
 ## Segurança (Electron)
 
 - `nodeIntegration: false`
 - `contextIsolation: true`
-- acesso a dados no renderer via **IPC** (preload)
-
-
+- Acesso a dados no renderer via **IPC** (preload)
